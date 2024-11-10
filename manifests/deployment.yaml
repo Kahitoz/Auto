@@ -27,7 +27,7 @@ spec:
             name: files-cm    # Reference to the ConfigMap for environment variables
         volumeMounts:
         - name: filess-volume
-          mountPath: /app/dinara  # This is where the PVC for filess will be mounted
+          mountPath: /app/personal  # This is where the PVC for filess will be mounted
       volumes:
       - name: filess-volume
         persistentVolumeClaim:

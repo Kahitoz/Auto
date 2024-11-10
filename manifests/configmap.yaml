@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: image-cm
-  namespace: dinara
+  namespace: personal
 data:
   PG_TABLE: "pg-admin-database-images-table"
   PG_USERNAME: "pg-admin-username"
