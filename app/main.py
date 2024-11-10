@@ -59,7 +59,7 @@ async def post_vid_file(
 
     # Generate the URL for the zip file
     base_url = "http://" + request.url.netloc
-    zip_file_url = f"{base_url}/cdnservice/zip/{zip_filename}"
+    zip_file_url = f"{base_url}/cdn-service/download-zip/{zip_filename}"
 
     # Modify the saved files to include accessible URLs
     for item in saved_files:
@@ -91,29 +91,15 @@ async def serve_file(file_path: str, file_name: str):
     # Serve the file as a FileResponse
     return FileResponse(file_full_path)
 
-# Serve the zip file directly from BASE_FILE_PATH
-@app.get("/cdnservice/zip/{zip_name}")
-async def serve_zip(zip_name: str):
-    zip_file_path = os.path.join(BASE_FILE_PATH, zip_name)
-    print(f"Attempting to serve zip file at: {zip_file_path}")  # Debug
-
-    # Check if the zip file exists
-    if not os.path.exists(zip_file_path):
-        raise HTTPException(status_code=404, detail="Zip file not found")
-
-    # Serve the zip file as a FileResponse
-    return FileResponse(zip_file_path)
-
-
 BASE_DIR = os.path.dirname(__file__)
 
 
-@app.get("/download-zip/{zip_name}")
+@app.get("/cdn-service/download-zip/{zip_name}")
 async def download_zip(zip_name: str):
     zip_path = os.path.join(BASE_DIR, "personal", zip_name)
     # Check if the file exists before trying to serve it
     if not os.path.isfile(zip_path):
-        return {"error": zip_path}
+        return {"error": zip_path, 'base_dir':BASE_DIR}
 
     # Serve the ZIP file
     return FileResponse(zip_path, filename="Desktop.zip", media_type="application/zip")
