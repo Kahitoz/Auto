@@ -50,7 +50,7 @@ async def post_vid_file(
 
     # Generate the URL for downloading the zip file
     # (Assuming you have NGINX or another service to serve files from BASE_IMAGE_PATH)
-    download_url = f"http://127.0.0.1:8000/{os.path.basename(zip_file_path)}"
+    download_url = f"http://192.168.1.2:30008//{os.path.basename(zip_file_path)}"
 
     return {
         "message": "File(s) successfully uploaded and zipped",
