@@ -17,4 +17,4 @@ spec:
           service:
             name: files-service
             port:
-              number: 5003
+              number: 5005
