@@ -50,7 +50,7 @@ pipeline {
             steps {
                 script {
                     // Restart the deployment to apply the new image
-                    sh "kubectl --kubeconfig=${KUBECONFIG} rollout restart deployment/image-dp -n ${NAMESPACE}"
+                    sh "kubectl --kubeconfig=${KUBECONFIG} rollout restart deployment/files-dp -n ${NAMESPACE}"
                 }
             }
         }
