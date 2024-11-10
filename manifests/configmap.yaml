@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: image-cm
+  name: files-cm
   namespace: personal
 data:
   PG_TABLE: "pg-admin-database-images-table"

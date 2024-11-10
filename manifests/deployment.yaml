@@ -26,9 +26,9 @@ spec:
         - configMapRef:
             name: files-cm  # Reference to the ConfigMap for environment variables
         volumeMounts:
-        - name: filess-volume
+        - name: files-volume
           mountPath: /app/personal  # This is where the PVC for filess will be mounted
       volumes:
       - name: filess-volume
         persistentVolumeClaim:
-          claimName: pvc-filess-hostpath  # Reference to the PVC for filess
+          claimName: pvc-files-hostpath  # Reference to the PVC for filess
