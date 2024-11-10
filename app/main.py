@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import List
 import os
 import shutil
+import zipfile
 
 app = FastAPI()
 
@@ -19,7 +20,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 @app.post("/post_vid_file")
 async def post_vid_file(
@@ -42,10 +42,21 @@ async def post_vid_file(
             shutil.copyfileobj(file.file, file_object)
         saved_files.append(file_location)
 
+    # Create a zip file of the uploaded files
+    zip_file_path = os.path.join(BASE_IMAGE_PATH, f"{subject}_{topic}_{date}.zip")
+    with zipfile.ZipFile(zip_file_path, 'w') as zipf:
+        for file_path in saved_files:
+            zipf.write(file_path, os.path.basename(file_path))
+
+    # Generate the URL for downloading the zip file
+    # (Assuming you have NGINX or another service to serve files from BASE_IMAGE_PATH)
+    download_url = f"http://127.0.0.1:8000/{os.path.basename(zip_file_path)}"
+
     return {
-        "message": "File(s) successfully uploaded",
+        "message": "File(s) successfully uploaded and zipped",
         "subject": subject,
         "topic": topic,
         "date": date,
         "file_paths": saved_files,
+        "zip_file_url": download_url,
     }

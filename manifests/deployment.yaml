@@ -25,10 +25,10 @@ spec:
         envFrom:
         - configMapRef:
             name: files-cm  # Reference to the ConfigMap for environment variables
-#        volumeMounts:
-#        - name: files-volume
-#          mountPath: /app/personal  # This is where the PVC for files will be mounted
-#      volumes:
-#      - name: files-volume
-#        persistentVolumeClaim:
-#          claimName: pvc-files-hostpath  # Reference to the PVC for files
+        volumeMounts:
+        - name: files-volume
+          mountPath: /app/personal  # This is where the PVC for files will be mounted
+      volumes:
+      - name: files-volume
+        persistentVolumeClaim:
+          claimName: pvc-files-hostpath  # Reference to the PVC for files
