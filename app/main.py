@@ -91,7 +91,7 @@ async def serve_file(file_path: str, file_name: str):
     # Serve the file as a FileResponse
     return FileResponse(file_full_path)
 
-BASE_DIR = os.path.dirname(__file__)
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
 @app.get("/cdn-service/download-zip/{zip_name}")
