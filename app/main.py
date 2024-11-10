@@ -1,10 +1,9 @@
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from datetime import datetime
 from typing import List
 import os
 import zipfile
-from io import BytesIO
 
 app = FastAPI()
 
@@ -35,12 +34,11 @@ async def upload_and_zip(
             zipf.writestr(file.filename, file_content)
 
     # Generate the URL for the zip file
-    base_url = "http://" + request.url.netloc
+    base_url = "https://" + "api.kahitoz.com/cdn"
     zip_file_url = f"{base_url}/download-zip/{zip_filename}"
 
     return {
-        "message": "Files successfully uploaded and zipped",
-        "zip_file_url": zip_file_url
+        "message": f"Here is the recorded lecture video and resource for Subject - {subject}, topic -{topic} on {date} -url {zip_file_url}",
     }
 
 
@@ -55,3 +53,35 @@ async def download_zip(zip_name: str):
 
     # Serve the ZIP file
     return FileResponse(zip_path, filename=zip_name, media_type="application/zip")
+
+
+# Endpoint to list all download links for zip files
+@app.get("/list-download-links")
+async def list_download_links(request: Request):
+    base_url = "https://" + "api.kahitoz.com/cdn"
+    download_links = []
+
+    # Iterate over all files in the base path directory
+    for file_name in os.listdir(BASE_FILE_PATH):
+        if file_name.endswith(".zip"):
+            file_url = f"{base_url}/download-zip/{file_name}"
+            download_links.append({
+                "file_name": file_name,
+                "download_url": file_url
+            })
+
+    return JSONResponse(content={"download_links": download_links})
+
+
+# Endpoint to delete a zip file by name
+@app.delete("/delete-zip/{zip_name}")
+async def delete_zip(zip_name: str):
+    zip_path = os.path.join(BASE_FILE_PATH, zip_name)
+
+    # Check if the file exists before trying to delete
+    if not os.path.isfile(zip_path):
+        raise HTTPException(status_code=404, detail="Zip file not found")
+
+    # Delete the file
+    os.remove(zip_path)
+    return {"message": f"Zip file '{zip_name}' has been deleted successfully"}
