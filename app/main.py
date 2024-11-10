@@ -1,11 +1,9 @@
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request
 from fastapi.responses import FileResponse
 from datetime import datetime
-from typing import List, Optional
+from typing import List
 import os
 import zipfile
-import pywhatkit
-import asyncio  # for asynchronous delay
 from io import BytesIO
 
 app = FastAPI()
@@ -15,28 +13,12 @@ BASE_FILE_PATH = "/app/personal"
 os.makedirs(BASE_FILE_PATH, exist_ok=True)
 
 
-# Function to send WhatsApp message to a number or group
-async def send_whatsapp_message(recipient: str, message: str, is_group: bool = False):
-    now = datetime.now()
-    hour = now.hour
-    minute = now.minute + 2  # Schedule the message 2 minutes from now to allow for async execution
-
-    if is_group:
-        # Sending message to a WhatsApp group
-        pywhatkit.sendwhatmsg_to_group(recipient, message, hour, minute)
-    else:
-        # Sending message to an individual number
-        pywhatkit.sendwhatmsg(recipient, message, hour, minute)
-
-
 @app.post("/upload_and_zip")
 async def upload_and_zip(
         request: Request,
         subject: str = Form(...),
         topic: str = Form(...),
         files: List[UploadFile] = File(...),
-        recipient: str = Form(...),  # Phone number or group ID
-        is_group: Optional[bool] = Form(False)  # Specify if recipient is a group
 ):
     # Use the current date for the entry
     date = datetime.now().strftime("%Y-%m-%d")
@@ -56,14 +38,8 @@ async def upload_and_zip(
     base_url = "http://" + request.url.netloc
     zip_file_url = f"{base_url}/download-zip/{zip_filename}"
 
-    # Prepare the message
-    message = f"Your files have been successfully uploaded and zipped. You can download them here: {zip_file_url}"
-
-    # Send WhatsApp message to the specified recipient (individual or group)
-    await send_whatsapp_message(recipient, message, is_group)
-
     return {
-        "message": "Files successfully uploaded, zipped, and WhatsApp message sent",
+        "message": "Files successfully uploaded and zipped",
         "zip_file_url": zip_file_url
     }
 
