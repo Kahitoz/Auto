@@ -36,6 +36,7 @@ async def post_vid_file(
     # Create a directory for storing the files for this post
     post_dir = os.path.join(BASE_FILE_PATH, f"{subject}_{topic}_{date}")
     os.makedirs(post_dir, exist_ok=True)
+    print(f"Directory created for files: {post_dir}")  # Debug
 
     saved_files = []
 
@@ -47,12 +48,14 @@ async def post_vid_file(
             "File": file.filename,
             "Path": post_dir
         })
+        print(f"File saved at: {file_location}")  # Debug
 
     # Create a zip file of the uploaded files
     zip_file_path = os.path.join(BASE_FILE_PATH, f"{subject}_{topic}_{date}.zip")
     with zipfile.ZipFile(zip_file_path, 'w') as zipf:
         for file_path in [os.path.join(post_dir, f["File"]) for f in saved_files]:
             zipf.write(file_path, os.path.basename(file_path))
+    print(f"Zip file created at: {zip_file_path}")  # Debug
 
     # Generate the URL for the zip file
     base_url = "https://" + request.url.netloc
@@ -61,7 +64,7 @@ async def post_vid_file(
     # Modify the saved files to include accessible URLs
     for item in saved_files:
         file_name = item['File']
-        file_path = item['Path'].strip('/')  # Remove leading/trailing slashes
+        file_path = os.path.basename(item['Path']).strip('/')  # Remove leading/trailing slashes
         item['FileURL'] = f"{base_url}/cdnservice/{file_path}/{file_name}"
 
     # Return the modified result as a JSON response with zip file link
@@ -75,10 +78,11 @@ async def post_vid_file(
     }
 
 # Serve individual files
-@app.get("/cdnservice/{file_path:path}/{file_name}")
+@app.get("/cdnservice/{file_path}/{file_name}")
 async def serve_file(file_path: str, file_name: str):
     # Construct the full file path by combining base path and dynamic path
     file_full_path = os.path.join(BASE_FILE_PATH, file_path, file_name)
+    print(f"Attempting to serve file at: {file_full_path}")  # Debug
 
     # Check if the file exists
     if not os.path.exists(file_full_path):
@@ -91,6 +95,7 @@ async def serve_file(file_path: str, file_name: str):
 @app.get("/cdnservice/zip/{zip_name}")
 async def serve_zip(zip_name: str):
     zip_file_path = os.path.join(BASE_FILE_PATH, zip_name)
+    print(f"Attempting to serve zip file at: {zip_file_path}")  # Debug
 
     # Check if the zip file exists
     if not os.path.exists(zip_file_path):
