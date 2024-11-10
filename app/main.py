@@ -50,8 +50,9 @@ async def post_vid_file(
         })
         print(f"File saved at: {file_location}")  # Debug
 
-    # Create a zip file of the uploaded files
-    zip_file_path = os.path.join(BASE_FILE_PATH, f"{subject}_{topic}_{date}.zip")
+    # Create a zip file of the uploaded files in the base path
+    zip_filename = f"{subject}_{topic}_{date}.zip"
+    zip_file_path = os.path.join(BASE_FILE_PATH, zip_filename)
     with zipfile.ZipFile(zip_file_path, 'w') as zipf:
         for file_path in [os.path.join(post_dir, f["File"]) for f in saved_files]:
             zipf.write(file_path, os.path.basename(file_path))
@@ -59,7 +60,7 @@ async def post_vid_file(
 
     # Generate the URL for the zip file
     base_url = "https://" + request.url.netloc
-    zip_file_url = f"{base_url}/cdnservice/zip/{os.path.basename(zip_file_path)}"
+    zip_file_url = f"{base_url}/cdnservice/zip/{zip_filename}"
 
     # Modify the saved files to include accessible URLs
     for item in saved_files:
