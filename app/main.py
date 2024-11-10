@@ -55,7 +55,7 @@ async def post_vid_file(
             zipf.write(file_path, os.path.basename(file_path))
 
     # Generate the URL for the zip file
-    base_url = "https://" + request.url.netloc
+    base_url = "http://" + request.url.netloc
     zip_file_url = f"{base_url}/cdnservice/zip/{os.path.basename(zip_file_path)}"
 
     # Modify the saved files to include accessible URLs
