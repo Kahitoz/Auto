@@ -18,13 +18,13 @@ spec:
     spec:
       containers:
       - name: files-dp-container
-        files: 192.168.1.2:32000/filesprg:latest
-        filesPullPolicy: Always   # Ensure the latest files is always pulled
+        image: 192.168.1.2:32000/filesprg:latest  # Use 'image' instead of 'files'
+        imagePullPolicy: Always  # Use 'imagePullPolicy' instead of 'filesPullPolicy'
         ports:
         - containerPort: 8000
         envFrom:
         - configMapRef:
-            name: files-cm    # Reference to the ConfigMap for environment variables
+            name: files-cm  # Reference to the ConfigMap for environment variables
         volumeMounts:
         - name: filess-volume
           mountPath: /app/personal  # This is where the PVC for filess will be mounted
