@@ -29,6 +29,6 @@ spec:
         - name: files-volume
           mountPath: /app/personal  # This is where the PVC for filess will be mounted
       volumes:
-      - name: filess-volume
+      - name: files-volume
         persistentVolumeClaim:
           claimName: pvc-files-hostpath  # Reference to the PVC for filess
