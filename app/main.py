@@ -103,3 +103,17 @@ async def serve_zip(zip_name: str):
 
     # Serve the zip file as a FileResponse
     return FileResponse(zip_file_path)
+
+
+BASE_DIR = os.path.dirname(__file__)
+
+
+@app.get("/download-zip/{zip_name}")
+async def download_zip(zip_name: str):
+    zip_path = os.path.join(BASE_DIR, "personal", zip_name)
+    # Check if the file exists before trying to serve it
+    if not os.path.isfile(zip_path):
+        return {"error": zip_path}
+
+    # Serve the ZIP file
+    return FileResponse(zip_path, filename="Desktop.zip", media_type="application/zip")
