@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-files-hostpath
+  namespace: personal
+spec:
+  capacity:
+    storage: 50Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: /home/kahitoz/personal  # Local directory on your host system
+  storageClassName: ""  # Set to empty to avoid using the storage class
