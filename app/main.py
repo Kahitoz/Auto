@@ -1,10 +1,10 @@
-import shutil
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request
 from fastapi.responses import FileResponse
 from datetime import datetime
 from typing import List
 import os
 import zipfile
+from io import BytesIO
 
 app = FastAPI()
 
@@ -23,23 +23,16 @@ async def upload_and_zip(
     # Use the current date for the entry
     date = datetime.now().strftime("%Y-%m-%d")
 
-    # Create a directory for storing the files for this post
-    post_dir = os.path.join(BASE_FILE_PATH, f"{subject}_{topic}_{date}")
-    os.makedirs(post_dir, exist_ok=True)
-
-    # Save each uploaded file in the directory
-    for file in files:
-        file_location = os.path.join(post_dir, file.filename)
-        with open(file_location, "wb") as file_object:
-            shutil.copyfileobj(file.file, file_object)
-
-    # Create a zip file of the uploaded files
+    # Define the zip file path and name based on subject, topic, and date
     zip_filename = f"{subject}_{topic}_{date}.zip"
     zip_file_path = os.path.join(BASE_FILE_PATH, zip_filename)
+
+    # Create a zip file in memory
     with zipfile.ZipFile(zip_file_path, 'w') as zipf:
-        for file in os.listdir(post_dir):
-            file_path = os.path.join(post_dir, file)
-            zipf.write(file_path, os.path.basename(file_path))
+        for file in files:
+            # Read file content and write it directly to the zip archive
+            file_content = await file.read()
+            zipf.writestr(file.filename, file_content)
 
     # Generate the URL for the zip file
     base_url = "http://" + request.url.netloc
