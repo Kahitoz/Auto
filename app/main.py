@@ -6,7 +6,6 @@ from typing import List
 import os
 import shutil
 import zipfile
-import json
 
 app = FastAPI()
 
@@ -28,7 +27,7 @@ async def post_vid_file(
         request: Request,
         subject: str = Form(...),
         topic: str = Form(...),
-        files: List[UploadFile] = File(...),  # Accepts any type of file, not just video
+        files: List[UploadFile] = File(...),
 ):
     # Use the current date for the entry
     date = datetime.now().strftime("%Y-%m-%d")
@@ -59,13 +58,13 @@ async def post_vid_file(
     print(f"Zip file created at: {zip_file_path}")  # Debug
 
     # Generate the URL for the zip file
-    base_url = "https://" + request.url.netloc
+    base_url = "http://" + request.url.netloc
     zip_file_url = f"{base_url}/cdnservice/zip/{zip_filename}"
 
     # Modify the saved files to include accessible URLs
     for item in saved_files:
         file_name = item['File']
-        file_path = os.path.basename(item['Path']).strip('/')  # Remove leading/trailing slashes
+        file_path = os.path.basename(item['Path']).strip('/')
         item['FileURL'] = f"{base_url}/cdnservice/{file_path}/{file_name}"
 
     # Return the modified result as a JSON response with zip file link
@@ -92,7 +91,7 @@ async def serve_file(file_path: str, file_name: str):
     # Serve the file as a FileResponse
     return FileResponse(file_full_path)
 
-# Serve the zip file
+# Serve the zip file directly from BASE_FILE_PATH
 @app.get("/cdnservice/zip/{zip_name}")
 async def serve_zip(zip_name: str):
     zip_file_path = os.path.join(BASE_FILE_PATH, zip_name)
